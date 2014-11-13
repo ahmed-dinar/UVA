@@ -6,10 +6,8 @@ using namespace std;
 #define pfd(x,y) printf("%d %d",x,y)
 #define pfl(x) printf("%ld",x)
 #define nl printf("\n")
-
 #define cs(x) printf("Case %d: ",x)
 #define csn(x) printf("Case %d:\n",x)
-
 #define all(x) x.begin(),x.end()
 #define Find(x,n) find(all(x),n)
 #define pi acos(-1.0)
