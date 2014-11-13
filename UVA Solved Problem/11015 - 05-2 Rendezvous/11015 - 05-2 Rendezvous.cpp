@@ -25,7 +25,7 @@ using namespace std;
 #define filein freopen("in.txt","r",stdin)
 #define fileout freopen("my.txt","w",stdout)
 #define inf 100000
-#define MAX 30000000
+#define MAX 50001
 #define MOD 4294967296
 
 bool isUpper(char ch){ return ( ch>='A' && ch<='Z' ) ?  true :  false; }
@@ -45,25 +45,65 @@ template<class T>T Max(T n,T p) { return (n>=p) ? n : p; }
 template<class T>T ABS(T n) { return (n<0) ?  (-n) :  n; }
 
 
-int res[MAX]={0};
+struct res
+{
+    int u;
+    string name;
+    res( int U,string N ) { u=U; name=N; }
+    bool operator < ( const res& p ) const {
+        if( u == p.u )
+            return name >  p.name ;
+        else
+            return u > p.u;
+    }
+};
 
-void sieve(){
-    for(int d = 1 ; d <= MAX / 2 ; d ++)
-        for(int k = d + d ; k <= MAX ; k = k + d)
-             if( d == ((k-d) ^ k) )
-                    res[k]++;
+int g[23][23];
+map<int,string>id;
 
-    for(int i=2; i <= MAX ; i++) res[i] += res[i - 1];
+void floyd_warshall(int n){
+    for(int k=1;k<=n; k++)
+        for(int i=1;i<=n; i++)
+            for(int j=1;j<=n; j++)
+                if( g[i][j]>(g[i][k]+g[k][j]) )
+                    g[i][j]=g[i][k]+g[k][j];
+
 }
 
-int main(){
-    sieve();
-    int t,cs=0;
-    sc(t);
-    while(t--){
-        int x;
-        sc(x);
-        printf("Case %d: %d\n",++cs,res[x]);
+void Set(int n){
+    for(int i=1;i<=n; i++)
+        for(int j=1;j<=n; j++)
+            g[i][j]=inf;
+}
+
+int main()
+{
+
+
+    int T=0,t;
+    int n,m;
+    while( scd(n,m) == 2 ){
+        if(n==0&&m==0) break;
+        for(int i=1;i<=n;i++) cin >> id[i];
+        Set(n);
+        for(int i=0;i<m;i++){
+            int u,v,w;
+            scanf("%d %d %d",&u,&v,&w);
+            g[u][v]=w;
+            g[v][u]=w;
+        }
+        floyd_warshall(n);
+        priority_queue<res>q;
+        for(int i=1;i<=n;i++){
+            int tot=0;
+            for(int j=1;j<=n;j++){
+                if( g[i][j] == inf || i==j ) continue;
+                tot += g[i][j];
+            }
+            q.push( res( tot,id[i] ) );
+        }
+        printf("Case #%d : %s\n",++T,q.top().name.c_str());
     }
     return 0;
 }
+

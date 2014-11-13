@@ -25,7 +25,7 @@ using namespace std;
 #define filein freopen("in.txt","r",stdin)
 #define fileout freopen("my.txt","w",stdout)
 #define inf 100000
-#define MAX 30000000
+#define MAX 200005
 #define MOD 4294967296
 
 bool isUpper(char ch){ return ( ch>='A' && ch<='Z' ) ?  true :  false; }
@@ -45,25 +45,60 @@ template<class T>T Max(T n,T p) { return (n>=p) ? n : p; }
 template<class T>T ABS(T n) { return (n<0) ?  (-n) :  n; }
 
 
-int res[MAX]={0};
+struct node
+{
+    int u,v;
+    long w;
+    node(int U,int V,long W) { u=U; v=V; w=W; }
+    bool operator < ( const node& p) const { return w < p.w; }
+};
 
-void sieve(){
-    for(int d = 1 ; d <= MAX / 2 ; d ++)
-        for(int k = d + d ; k <= MAX ; k = k + d)
-             if( d == ((k-d) ^ k) )
-                    res[k]++;
+vector<node>g;
+int par[MAX];
 
-    for(int i=2; i <= MAX ; i++) res[i] += res[i - 1];
+int parent(int x){
+    return (par[x]==x) ? x : par[x]=parent(par[x]);
 }
 
-int main(){
-    sieve();
-    int t,cs=0;
-    sc(t);
-    while(t--){
-        int x;
-        sc(x);
-        printf("Case %d: %d\n",++cs,res[x]);
+long mst(int n){
+    for(int j=0;j<n;j++) par[j]=j;
+    int sz=(int)g.size();
+    int nodes=0;
+    long on = 0;
+    for(int i=0;i<sz;i++){
+        int u=g[i].u;
+        int v=g[i].v;
+        int pu=parent(u);
+        int pv=parent(v);
+        if(pu!=pv){
+            par[pu]=pv;
+            on += g[i].w;
+            nodes++;
+            if( nodes == n-1 ) return on;
+        }
+    }
+    return on;
+}
+
+int main()
+{
+   filein;
+
+    int n,m;
+    while( scd(n,m) == 2 ){
+        if(n==0&&m==0 ) break;
+        long total=0;
+        for(int i=0;i<m;i++){
+            int u,v;
+            long w;
+            scanf("%d %d %ld",&u,&v,&w);
+            g.pb( node(u,v,w) );
+            total += w;
+        }
+        sort(all(g));
+        long on=mst(n);
+        printf("%ld\n",total-on);
+        g.clear();
     }
     return 0;
 }

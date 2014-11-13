@@ -25,7 +25,7 @@ using namespace std;
 #define filein freopen("in.txt","r",stdin)
 #define fileout freopen("my.txt","w",stdout)
 #define inf 100000
-#define MAX 30000000
+#define MAX 50001
 #define MOD 4294967296
 
 bool isUpper(char ch){ return ( ch>='A' && ch<='Z' ) ?  true :  false; }
@@ -44,26 +44,87 @@ template<class T>T Pow(T n,T p) { T res=n; for(T i=1;i<p; i++){ res *= n; } retu
 template<class T>T Max(T n,T p) { return (n>=p) ? n : p; }
 template<class T>T ABS(T n) { return (n<0) ?  (-n) :  n; }
 
+struct node
+{
+    i64 complete_word;
+    node *next[27];
+    node() {
+        complete_word = 0;
+    for(int i=0;i<26; i++)
+        next[i]=NULL;
+    }
+};
 
-int res[MAX]={0};
+node *root;
 
-void sieve(){
-    for(int d = 1 ; d <= MAX / 2 ; d ++)
-        for(int k = d + d ; k <= MAX ; k = k + d)
-             if( d == ((k-d) ^ k) )
-                    res[k]++;
-
-    for(int i=2; i <= MAX ; i++) res[i] += res[i - 1];
+i64 Insert(char *s,int sz){
+    node *word = root;
+    i64 total=0,temp,res=0;
+    for(int i=0;i<sz;i++){
+        int w=s[i]-'0';
+        if(word->next[w]==NULL){
+            word->next[w] = new node();
+        }
+        word = word->next[w];
+        word->complete_word++;
+        res = Max(res,word->complete_word*(i+1));
+        /*if(total==0){
+            total = word->complete_word;
+            temp = total;
+        }
+        else{
+            if(temp==word->complete_word){
+                total += word->complete_word;
+            }
+            else{
+                res = Max(res,total);
+                total = 0;
+            }
+        }*/
+    }
+    return res;
 }
 
-int main(){
-    sieve();
-    int t,cs=0;
+void Clear(node *n){
+    for(int i=0;i<26; i++)
+        if(n->next[i])
+            Clear(n->next[i]);
+    delete(n);
+}
+
+/*int Search(char *s,int sz){
+    node *word = root;
+    for(int i=0;i<sz;i++){
+        int w=s[i]-'0';
+        if(word->next[w]==NULL) return false;
+        word = word->next[w];
+    }
+    return word->complete_word;
+}
+*/
+
+int main()
+{
+    //filein;
+    //fileout;;
+
+    int t;
     sc(t);
     while(t--){
-        int x;
-        sc(x);
-        printf("Case %d: %d\n",++cs,res[x]);
+        int n;
+        i64 res=0;
+        root = new node();
+        char s[210];
+        sc(n);
+        for(int i=0;i<n;i++){
+            scanf("%s",s);
+            int ln=strlen(s);
+            i64 r = Insert(s,ln);
+            res = Max(res,r);
+        }
+        printf("%lld\n",res);
+        Clear(root);
     }
     return 0;
 }
+

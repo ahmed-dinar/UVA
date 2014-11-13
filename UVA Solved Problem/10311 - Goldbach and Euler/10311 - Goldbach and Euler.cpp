@@ -24,8 +24,6 @@ using namespace std;
 #define scdll(n,m) scanf("%lld %lld",&n,&m)
 #define filein freopen("in.txt","r",stdin)
 #define fileout freopen("my.txt","w",stdout)
-#define inf 100000
-#define MAX 30000000
 #define MOD 4294967296
 
 bool isUpper(char ch){ return ( ch>='A' && ch<='Z' ) ?  true :  false; }
@@ -44,26 +42,65 @@ template<class T>T Pow(T n,T p) { T res=n; for(T i=1;i<p; i++){ res *= n; } retu
 template<class T>T Max(T n,T p) { return (n>=p) ? n : p; }
 template<class T>T ABS(T n) { return (n<0) ?  (-n) :  n; }
 
+#define MAX 100000000
+#define lim 3125002
 
-int res[MAX]={0};
+int flag[lim]={0};
+vector<int>primes;
 
 void sieve(){
-    for(int d = 1 ; d <= MAX / 2 ; d ++)
-        for(int k = d + d ; k <= MAX ; k = k + d)
-             if( d == ((k-d) ^ k) )
-                    res[k]++;
-
-    for(int i=2; i <= MAX ; i++) res[i] += res[i - 1];
+    flag[0/32] = flag[0/32] | 1 << 0%32;
+    flag[1/32] = flag[1/32] | 1 << 1%32;
+    for(int i=3;i*i<=MAX; i += 2){
+        if(  (flag[i/32] & 1<<i) ==0 ){
+            primes.pb(i);
+            for(int j=i*i; j<=MAX; j += 2*i){
+                flag[j/32] = flag[j/32] | 1 << j%32 ;
+            }
+        }
+    }
+    primes.pb(2);
+    for(int i=4,j=3;i<=MAX;i+=2,j+=2){
+        flag[i/32] = flag[i/32] | 1 << i%32;
+        if(  (flag[j/32] & 1<<j) == 0 )  primes.pb(j);
+    }
 }
 
-int main(){
+int main()
+{
+	//filein;
+
     sieve();
-    int t,cs=0;
-    sc(t);
-    while(t--){
-        int x;
-        sc(x);
-        printf("Case %d: %d\n",++cs,res[x]);
+
+    int n;
+    while(sc(n)!=EOF){
+
+        if(n<=4)
+            printf("%d is not the sum of two primes!\n",n);
+        else if( !isEven(n) ){
+            int x=n-2;
+            if( (flag[x/32] & 1<<x) == 0 )
+                printf("%d is the sum of %d and %d.\n",n,2,x);
+            else
+                printf("%d is not the sum of two primes!\n",n);
+        }
+        else{
+            int is=false;
+            int index = (int) ( lower_bound(primes.begin(),primes.end(),n/2) - primes.begin() );
+            if(primes[index]==n/2) index++;
+
+            while( primes[index]<n ){
+                int x = primes[index];
+                int y = n-x;
+                if( (flag[y/32] & 1<<y) == 0   ){
+                    is = true;
+                    printf("%d is the sum of %d and %d.\n",n,y,x);
+                    break;
+                }
+                index++;
+            }
+            if(!is) printf("%d is not the sum of two primes!\n",n);
+        }
     }
     return 0;
 }

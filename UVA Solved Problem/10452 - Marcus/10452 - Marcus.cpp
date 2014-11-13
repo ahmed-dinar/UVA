@@ -25,7 +25,7 @@ using namespace std;
 #define filein freopen("in.txt","r",stdin)
 #define fileout freopen("my.txt","w",stdout)
 #define inf 100000
-#define MAX 30000000
+#define MAX 50001
 #define MOD 4294967296
 
 bool isUpper(char ch){ return ( ch>='A' && ch<='Z' ) ?  true :  false; }
@@ -45,25 +45,82 @@ template<class T>T Max(T n,T p) { return (n>=p) ? n : p; }
 template<class T>T ABS(T n) { return (n<0) ?  (-n) :  n; }
 
 
-int res[MAX]={0};
+char g[9][9];
+int r,c,di,dj;
+const char w[]={"IEHOVA"};
+bool reached;
+deque<string>res;
 
-void sieve(){
-    for(int d = 1 ; d <= MAX / 2 ; d ++)
-        for(int k = d + d ; k <= MAX ; k = k + d)
-             if( d == ((k-d) ^ k) )
-                    res[k]++;
+void command(int i,int j,int k){
 
-    for(int i=2; i <= MAX ; i++) res[i] += res[i - 1];
+    if(reached) return;
+
+    if( i<0 || i>=r || j<0 || j>=c ) return;
+
+    if( i==di && j==dj){
+        reached = true;
+        if(!res.empty()){
+            cout << res.front();
+            res.pop_front();
+            while(!res.empty()){
+                cout << " " << res.front();
+                res.pop_front();
+            }
+        }
+        cout << endl;
+        return;
+    }
+
+    if(k>6) return;
+
+
+    if( g[i-1][j] == w[k] ||  (i-1==di && j==dj) ){
+        res.push_back("forth");
+        command(i-1,j,k+1);
+        if(!res.empty())
+            res.pop_back();
+    }
+    if( g[i][j-1] == w[k] || (i==di && j-1==dj)  ){
+        res.push_back("left");
+        command(i,j-1,k+1);
+        if(!res.empty())
+            res.pop_back();
+    }
+    if( g[i][j+1] == w[k] || (i==di && j+1==dj)  ){
+        res.push_back("right");
+        command(i,j+1,k+1);
+        if(!res.empty())
+            res.pop_back();
+    }
 }
 
-int main(){
-    sieve();
-    int t,cs=0;
+int main(void)
+{
+
+
+    int t,sti,stj;
     sc(t);
     while(t--){
-        int x;
-        sc(x);
-        printf("Case %d: %d\n",++cs,res[x]);
+        scd(r,c);
+        scanf("\n");
+        for(int i=0;i<r;i++) gets(g[i]);
+
+         for(int i=0;i<r;i++){
+            for(int j=0;j<c;j++){
+                if(g[i][j]==  '@' ){
+                    sti = i;
+                    stj = j;
+                }
+                if(g[i][j]==  '#' ){
+                    di = i;
+                    dj = j;
+                }
+            }
+         }
+         reached = false;
+         command(sti,stj,0);
     }
+
     return 0;
 }
+

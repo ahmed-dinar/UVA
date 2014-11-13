@@ -25,7 +25,7 @@ using namespace std;
 #define filein freopen("in.txt","r",stdin)
 #define fileout freopen("my.txt","w",stdout)
 #define inf 100000
-#define MAX 30000000
+#define MAX 2000001
 #define MOD 4294967296
 
 bool isUpper(char ch){ return ( ch>='A' && ch<='Z' ) ?  true :  false; }
@@ -45,25 +45,38 @@ template<class T>T Max(T n,T p) { return (n>=p) ? n : p; }
 template<class T>T ABS(T n) { return (n<0) ?  (-n) :  n; }
 
 
-int res[MAX]={0};
+int phi[MAX];
+int res[MAX];
+int step[MAX];
 
-void sieve(){
-    for(int d = 1 ; d <= MAX / 2 ; d ++)
-        for(int k = d + d ; k <= MAX ; k = k + d)
-             if( d == ((k-d) ^ k) )
-                    res[k]++;
+void gen(){
+    for(int i=2;i<MAX;i++) phi[i]=i;
+    for(int i=2;i<MAX;i++)
+        if(phi[i]==i)
+            for(int j=i;j<MAX;j+=i)
+                phi[j]-=phi[j]/i;
 
-    for(int i=2; i <= MAX ; i++) res[i] += res[i - 1];
+    step[2]=1;
+    res[2]=1;
+    for(int i=3;i<=MAX;i++){
+        step[i] = step[phi[i]]+1;
+        res[i] = step[i]+res[i-1];
+    }
 }
 
-int main(){
-    sieve();
-    int t,cs=0;
+int main()
+{
+    //filein;
+    //fileout;;
+
+    gen();
+    int t;
     sc(t);
     while(t--){
-        int x;
-        sc(x);
-        printf("Case %d: %d\n",++cs,res[x]);
+        int x,y;
+        scd(x,y);
+        printf("%d\n",res[y]-res[x-1]);
     }
     return 0;
 }
+

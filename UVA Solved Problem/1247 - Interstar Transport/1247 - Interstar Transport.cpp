@@ -25,7 +25,7 @@ using namespace std;
 #define filein freopen("in.txt","r",stdin)
 #define fileout freopen("my.txt","w",stdout)
 #define inf 100000
-#define MAX 30000000
+#define MAX 50001
 #define MOD 4294967296
 
 bool isUpper(char ch){ return ( ch>='A' && ch<='Z' ) ?  true :  false; }
@@ -45,25 +45,62 @@ template<class T>T Max(T n,T p) { return (n>=p) ? n : p; }
 template<class T>T ABS(T n) { return (n<0) ?  (-n) :  n; }
 
 
-int res[MAX]={0};
+int g[110][110];
+int next[110][110];
+map<char,int>id;
+map<int,char>r;
 
-void sieve(){
-    for(int d = 1 ; d <= MAX / 2 ; d ++)
-        for(int k = d + d ; k <= MAX ; k = k + d)
-             if( d == ((k-d) ^ k) )
-                    res[k]++;
+void floyd_warshall(int n){
+    for(int k=1;k<=n; k++)
+        for(int i=1;i<=n; i++)
+            for(int j=1;j<=n; j++)
+                if( g[i][j]>(g[i][k]+g[k][j]) )
+                    g[i][j]=(g[i][k]+g[k][j]),next[i][j]=next[i][k];
 
-    for(int i=2; i <= MAX ; i++) res[i] += res[i - 1];
 }
 
-int main(){
-    sieve();
-    int t,cs=0;
-    sc(t);
-    while(t--){
-        int x;
-        sc(x);
-        printf("Case %d: %d\n",++cs,res[x]);
+void Set(int n){
+    for(int i=1;i<=n; i++)
+        for(int j=1;j<=n; j++)
+            g[i][j]=inf,next[i][j]=j;
+}
+
+int main()
+{
+    //filein;
+
+    int n,m,query;
+    while( scanf("%d %d",&n,&m) == 2 ){
+        int index=1;
+        Set(n);
+        for(int i=1;i<=m;i++){
+            int w;
+            char U,V;
+            sc("\n");
+            scanf("%c %c %d",&U,&V,&w);
+            if(id[U]==0) id[U]=index++;
+            if(id[V]==0) id[V]=index++;
+            g[id[U]][id[V]] = w;
+            g[id[V]][id[U]] = w;
+            r[id[U]]=U;
+            r[id[V]]=V;
+        }
+        floyd_warshall(n);
+        sc(query);
+        while(query--){
+            char u,v;
+            sc("\n");
+            scanf("%c %c",&u,&v);
+            int p = id[u];
+            int q=id[v];
+            printf("%c",u);
+            while( p!=q ){
+                p = next[p][q];
+                printf(" %c",r[p]);
+            }
+            nl;
+        }
     }
     return 0;
 }
+

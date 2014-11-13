@@ -25,7 +25,7 @@ using namespace std;
 #define filein freopen("in.txt","r",stdin)
 #define fileout freopen("my.txt","w",stdout)
 #define inf 100000
-#define MAX 30000000
+#define MAX 105
 #define MOD 4294967296
 
 bool isUpper(char ch){ return ( ch>='A' && ch<='Z' ) ?  true :  false; }
@@ -45,25 +45,74 @@ template<class T>T Max(T n,T p) { return (n>=p) ? n : p; }
 template<class T>T ABS(T n) { return (n<0) ?  (-n) :  n; }
 
 
-int res[MAX]={0};
+struct node
+{
+    int u,v;
+    float w;
+    node( int U,int V,float W ){ u=U; v=V; w=W; }
+    bool operator < ( const node& p) const { return w < p.w; }
+};
 
-void sieve(){
-    for(int d = 1 ; d <= MAX / 2 ; d ++)
-        for(int k = d + d ; k <= MAX ; k = k + d)
-             if( d == ((k-d) ^ k) )
-                    res[k]++;
+vector<node>g;
+int par[MAX];
+map<int,pair<float,float> >id;
 
-    for(int i=2; i <= MAX ; i++) res[i] += res[i - 1];
+int parent(int x){
+    return (par[x]==x) ? x : par[x]=parent(par[x]);
 }
 
-int main(){
-    sieve();
-    int t,cs=0;
+float mst(int n){
+    sort(all(g));
+    int sz=(int)g.size();
+    int nodes=0;
+    float res=0.0;
+    for(int i=0;i<sz;i++){
+        int u=parent(g[i].u);
+        int v=parent(g[i].v);
+        if(u!=v){
+            par[u]=v;
+            res += g[i].w;
+            nodes++;
+            if(nodes == n) return res;
+        }
+    }
+    return res;
+}
+
+float distance_(int a,int b){
+    float x = (id[a].first-id[b].first)*(id[a].first-id[b].first);
+    float y = (id[a].second-id[b].second)*(id[a].second-id[b].second);
+    return (float)sqrt(x+y);
+}
+
+int main()
+{
+    //filein;
+    //fileout;
+
+    int t,nwline=false;
     sc(t);
-    while(t--){
-        int x;
-        sc(x);
-        printf("Case %d: %d\n",++cs,res[x]);
+    while( t-- ){
+        int n;
+        sc(n);
+        for(int i=1;i<=n;i++){
+            float x,y;
+            scanf("%f %f",&x,&y);
+            par[i]=i;
+            id[i] = make_pair(x,y);
+        }
+        for(int i=1;i<=n;i++){
+            for(int j=i+1;j<=n;j++){
+                float dis = distance_(i,j);
+                g.pb( node(i,j,dis) );
+            }
+        }
+        if(nwline) printf("\n");
+        printf("%.2f\n",mst(n));
+        g.clear();
+        id.clear();
+        nwline = true;
     }
     return 0;
 }
+

@@ -25,7 +25,7 @@ using namespace std;
 #define filein freopen("in.txt","r",stdin)
 #define fileout freopen("my.txt","w",stdout)
 #define inf 100000
-#define MAX 30000000
+#define MAX 50001
 #define MOD 4294967296
 
 bool isUpper(char ch){ return ( ch>='A' && ch<='Z' ) ?  true :  false; }
@@ -45,25 +45,44 @@ template<class T>T Max(T n,T p) { return (n>=p) ? n : p; }
 template<class T>T ABS(T n) { return (n<0) ?  (-n) :  n; }
 
 
-int res[MAX]={0};
+struct wlist
+{
+    string x;
+    wlist(string a) { x=a; }
+    bool operator < ( const wlist& p ) const {
+        return x.compare(p.x) > 0;
+    }
+};
 
-void sieve(){
-    for(int d = 1 ; d <= MAX / 2 ; d ++)
-        for(int k = d + d ; k <= MAX ; k = k + d)
-             if( d == ((k-d) ^ k) )
-                    res[k]++;
+map<string,int>isCount;
+priority_queue<wlist>q;
 
-    for(int i=2; i <= MAX ; i++) res[i] += res[i - 1];
-}
-
-int main(){
-    sieve();
-    int t,cs=0;
-    sc(t);
-    while(t--){
-        int x;
-        sc(x);
-        printf("Case %d: %d\n",++cs,res[x]);
+int main()
+{
+    string line;
+    while( getline(cin,line) ){
+        int sz = line.size();
+        string word("");
+        for(int i=0;i<sz;i++){
+            if(isLetter(line[i])){
+                word += toLower(line[i]);
+            }
+            else{
+                if( isCount[word]==0 && word != ""  ){
+                     isCount[word]=1;
+                     q.push( wlist(word) );
+                }
+                word = "";
+            }
+        }
+        if( word != "" && isCount[word]==0  ){
+            isCount[word]=1;
+            q.push( wlist(word) );
+        }
+    }
+    while(!q.empty()){
+        cout << q.top().x << endl;
+        q.pop();
     }
     return 0;
 }

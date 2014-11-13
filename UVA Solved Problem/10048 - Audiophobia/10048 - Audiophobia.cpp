@@ -25,7 +25,7 @@ using namespace std;
 #define filein freopen("in.txt","r",stdin)
 #define fileout freopen("my.txt","w",stdout)
 #define inf 100000
-#define MAX 30000000
+#define MAX 50001
 #define MOD 4294967296
 
 bool isUpper(char ch){ return ( ch>='A' && ch<='Z' ) ?  true :  false; }
@@ -44,26 +44,46 @@ template<class T>T Pow(T n,T p) { T res=n; for(T i=1;i<p; i++){ res *= n; } retu
 template<class T>T Max(T n,T p) { return (n>=p) ? n : p; }
 template<class T>T ABS(T n) { return (n<0) ?  (-n) :  n; }
 
+int g[110][110];
 
-int res[MAX]={0};
+void floyd_warshall(int n){
+    for(int k=1;k<=n; k++)
+        for(int i=1;i<=n; i++)
+            for(int j=1;j<=n; j++)
+                if( g[i][j]>Max(g[i][k],g[k][j]) )
+                    g[i][j]=Max(g[i][k],g[k][j]);
 
-void sieve(){
-    for(int d = 1 ; d <= MAX / 2 ; d ++)
-        for(int k = d + d ; k <= MAX ; k = k + d)
-             if( d == ((k-d) ^ k) )
-                    res[k]++;
-
-    for(int i=2; i <= MAX ; i++) res[i] += res[i - 1];
 }
 
-int main(){
-    sieve();
-    int t,cs=0;
-    sc(t);
-    while(t--){
-        int x;
-        sc(x);
-        printf("Case %d: %d\n",++cs,res[x]);
+void Set(int n){
+    for(int i=1;i<=n; i++)
+        for(int j=1;j<=n; j++)
+            g[i][j]=inf;
+}
+
+int main()
+{
+    //filein;
+
+    int n,m,q,T=0;
+    while( scanf("%d %d %d",&n,&m,&q) == 3 ){
+        if(n==0&&m==0&&q==0) break;
+        Set(n);
+        while(m--){
+            int u,v,w;
+            scanf("%d %d %d",&u,&v,&w);
+            g[u][v]=w;
+            g[v][u]=w;
+        }
+        floyd_warshall(n);
+        if(T) nl;
+        printf("Case #%d\n",++T);
+        while(q--){
+            int u,v;
+            scd(u,v);
+            (g[u][v] == inf) ? printf("no path\n") : printf("%d\n",g[u][v]);
+        }
     }
     return 0;
 }
+

@@ -25,7 +25,7 @@ using namespace std;
 #define filein freopen("in.txt","r",stdin)
 #define fileout freopen("my.txt","w",stdout)
 #define inf 100000
-#define MAX 30000000
+#define MAX 50001
 #define MOD 4294967296
 
 bool isUpper(char ch){ return ( ch>='A' && ch<='Z' ) ?  true :  false; }
@@ -44,26 +44,32 @@ template<class T>T Pow(T n,T p) { T res=n; for(T i=1;i<p; i++){ res *= n; } retu
 template<class T>T Max(T n,T p) { return (n>=p) ? n : p; }
 template<class T>T ABS(T n) { return (n<0) ?  (-n) :  n; }
 
+map<int,int>is;
 
-int res[MAX]={0};
+int main()
+{
+    //filein;
 
-void sieve(){
-    for(int d = 1 ; d <= MAX / 2 ; d ++)
-        for(int k = d + d ; k <= MAX ; k = k + d)
-             if( d == ((k-d) ^ k) )
-                    res[k]++;
-
-    for(int i=2; i <= MAX ; i++) res[i] += res[i - 1];
-}
-
-int main(){
-    sieve();
-    int t,cs=0;
-    sc(t);
-    while(t--){
-        int x;
-        sc(x);
-        printf("Case %d: %d\n",++cs,res[x]);
+    int n,m,price;
+    while(sc(n)!=EOF){
+       for(int i=0;i<n;i++){
+            sc(price);
+            is[price]++;
+       }
+       sc(m);
+       int x=m/2;
+       while(1){
+            if( is[x]>0  ){
+                is[x]--;
+                if(is[m-x]>0){
+                    printf("Peter should buy books whose prices are %d and %d.\n\n",x,m-x);
+                    break;
+                }
+                is[x]++;
+            }
+            x--;
+       }
+       is.clear();
     }
     return 0;
 }

@@ -25,7 +25,7 @@ using namespace std;
 #define filein freopen("in.txt","r",stdin)
 #define fileout freopen("my.txt","w",stdout)
 #define inf 100000
-#define MAX 30000000
+#define MAX 50001
 #define MOD 4294967296
 
 bool isUpper(char ch){ return ( ch>='A' && ch<='Z' ) ?  true :  false; }
@@ -44,26 +44,71 @@ template<class T>T Pow(T n,T p) { T res=n; for(T i=1;i<p; i++){ res *= n; } retu
 template<class T>T Max(T n,T p) { return (n>=p) ? n : p; }
 template<class T>T ABS(T n) { return (n<0) ?  (-n) :  n; }
 
+struct node
+{
+    int v;
+    i64 w;
+    node(int V,i64 W) { v=V; w=W; }
+    bool operator < ( const node& p) const { return w > p.w; }
+};
 
-int res[MAX]={0};
+vector<vector<int> >g(20000);
+vector<vector<i64> >cost(20000);
+i64 dis[20000];
 
-void sieve(){
-    for(int d = 1 ; d <= MAX / 2 ; d ++)
-        for(int k = d + d ; k <= MAX ; k = k + d)
-             if( d == ((k-d) ^ k) )
-                    res[k]++;
-
-    for(int i=2; i <= MAX ; i++) res[i] += res[i - 1];
+i64 djastra(int n,int src,int des){
+    for(int i=0;i<n;i++) dis[i]=inf;
+    priority_queue<node>q;
+    q.push(node(src,0));
+    dis[src]=0;
+    while(!q.empty()){
+        node no=q.top();
+        q.pop();
+        int u=no.v;
+        if(u==des) return dis[des];
+        int sz=g[u].size();
+        for(int i=0;i<sz;i++){
+            int v=g[u][i];
+            if(dis[v]>dis[u]+cost[u][i]){
+                dis[v]=dis[u]+cost[u][i];
+                q.push(node(v,dis[v]));
+            }
+        }
+    }
+    return -1;
 }
 
-int main(){
-    sieve();
-    int t,cs=0;
+int main()
+{
+
+    //filein;
+
+    int t;
     sc(t);
-    while(t--){
-        int x;
-        sc(x);
-        printf("Case %d: %d\n",++cs,res[x]);
+    for(int T=1;T<=t;T++){
+        int n,m,src,des;
+        scd(n,m);
+        scd(src,des);
+        for(int i=0;i<m;i++){
+            int u,v;
+            i64 w;
+            scanf("%d %d %lld",&u,&v,&w);
+            g[u].pb(v);
+            g[v].pb(u);
+            cost[u].pb(w);
+            cost[v].pb(w);
+        }
+        i64 res = djastra(n,src,des);
+        if(res == -1)
+            printf("Case #%d: unreachable\n",T);
+        else
+            printf("Case #%d: %lld\n",T,res);
+
+        for(int i=0;i<n;i++){
+            g[i].clear();
+            cost[i].clear();
+        }
     }
     return 0;
 }
+

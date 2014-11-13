@@ -25,7 +25,7 @@ using namespace std;
 #define filein freopen("in.txt","r",stdin)
 #define fileout freopen("my.txt","w",stdout)
 #define inf 100000
-#define MAX 30000000
+#define MAX 410
 #define MOD 4294967296
 
 bool isUpper(char ch){ return ( ch>='A' && ch<='Z' ) ?  true :  false; }
@@ -45,25 +45,74 @@ template<class T>T Max(T n,T p) { return (n>=p) ? n : p; }
 template<class T>T ABS(T n) { return (n<0) ?  (-n) :  n; }
 
 
-int res[MAX]={0};
+struct node
+{
+    int u,v;
+    i64 w;
+    node(int U,int V,i64 W) { u=U; v=V; w=W; }
+    bool operator < ( const node& p) const { return w < p.w; }
+};
 
-void sieve(){
-    for(int d = 1 ; d <= MAX / 2 ; d ++)
-        for(int k = d + d ; k <= MAX ; k = k + d)
-             if( d == ((k-d) ^ k) )
-                    res[k]++;
+vector<node>g;
+int par[MAX];
+map<string,int>id;
 
-    for(int i=2; i <= MAX ; i++) res[i] += res[i - 1];
+int parent(int x){
+    return (par[x]==x) ? x : par[x]=parent(par[x]);
 }
 
-int main(){
-    sieve();
-    int t,cs=0;
-    sc(t);
-    while(t--){
-        int x;
-        sc(x);
-        printf("Case %d: %d\n",++cs,res[x]);
+i64 mst(int n){
+    for(int j=0;j<=n;j++)
+        par[j]=j;
+    int sz=(int)g.size();
+    int nodes=0;
+    i64 res = 0;
+    for(int i=0;i<sz;i++){
+        int u=g[i].u;
+        int v=g[i].v;
+        int pu=parent(u);
+        int pv=parent(v);
+        if(pu!=pv){
+            par[pu]=pv;
+            res += g[i].w;
+            nodes++;
+            if( nodes == n-1 ) return res;
+        }
+    }
+    return -1;
+}
+
+int main()
+{
+   filein;
+
+    int n,m;
+    while( scd(n,m) == 2 ){
+        if(n==0&&m==0 ) break;
+        for(int i=0;i<n;i++){
+            string s;
+            cin >> s;
+            id[s]=i;
+        }
+        for(int i=0;i<m;i++){
+            string u,v;
+            i64 w;
+            cin >> u >> v;
+            scanf("%lld",&w);
+            g.pb( node(id[u],id[v],w) );
+        }
+        sort(all(g));
+        string src;
+        cin >> src;
+        if( n==1 && m==0 ){
+            printf("%d\n",0);
+        }
+        else{
+            i64 on=mst( n );
+            (on==-1) ? printf("Impossible\n") : printf("%lld\n",on);
+        }
+        g.clear();
+        id.clear();
     }
     return 0;
 }
