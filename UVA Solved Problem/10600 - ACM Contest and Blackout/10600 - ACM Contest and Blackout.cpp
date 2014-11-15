@@ -87,7 +87,7 @@ int mst(int n,int indx){
 
 int main()
 {
-    filein;
+    //filein;
 
     int t,Tc=0;
     sc(t);
@@ -99,41 +99,22 @@ int main()
             sc(u),sc(v),sc(w);
             g.pb( node(u,v,w) );
         }
-        printf("Case #%d : ",++Tc);
-        if( m==0 ){
-            if( n == 1 )
-                printf("No second way\n");
-            else
-                printf("No way\n");
-            continue;
-        }
-        else if( n==1 ){
-            printf("No second way\n");
-        }
-        else{
-            sort( all(g) );
-            int best = mst(n,-1);
-            if( best == -1 ){
-                printf("No way\n");
-            }
-            else{
-                int sz=edges.size();
-                int secondBest = inf;
-                int p = -1;
-                bool isc=false;
-                for(int i=0;i<sz;i++){
-                    p = mst(n,edges[i]);
-                    if( p != -1 ){
-                        isc = true;
-                        secondBest = min(secondBest,p);
-                    }
-                }
-                if( !isc )
-                    printf("No second way\n");
-                else
-                    printf("%d\n",secondBest);
+        sort( all(g) );
+        int best = mst(n,-1);
+        int sz=edges.size();
+        int secondBest = inf;
+        int p = -1;
+        bool isc=false;
+        for(int i=0;i<sz;i++){
+            p = mst(n,edges[i]);
+            if( p != -1 ){
+                isc = true;
+                secondBest = min(secondBest,p);
+                if( secondBest == best ) break;
             }
         }
+        if( secondBest == inf ) secondBest = best;
+        printf("%d %d\n",best,secondBest);
         g.clear();
         edges.clear();
     }

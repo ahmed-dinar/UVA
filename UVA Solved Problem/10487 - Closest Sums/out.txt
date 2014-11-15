@@ -1,0 +1,60 @@
+Case 1:
+Closest sum to 87 is 86.
+Closest sum to 92 is 92.
+Closest sum to 43 is 42.
+Closest sum to 120 is 115.
+Case 2:
+Closest sum to 8 is 8.
+Case 3:
+Closest sum to 5 is 5.
+Case 4:
+Closest sum to 4 is 4.
+Case 5:
+Closest sum to 6 is 6.
+Case 6:
+Closest sum to 5 is 5.
+Case 7:
+Closest sum to 0 is 5.
+Closest sum to 5 is 5.
+Closest sum to 100000 is 15.
+Case 8:
+Closest sum to 3 is 4.
+Closest sum to 4 is 4.
+Closest sum to 5 is 4.
+Closest sum to 6 is 4.
+Closest sum to 10 is 10.
+Closest sum to 12 is 11.
+Case 9:
+Closest sum to 10 is 10.
+Case 10:
+Closest sum to 10 is 10.
+Case 11:
+Closest sum to 20 is 11.
+Case 12:
+Closest sum to 16 is 17.
+Case 13:
+Closest sum to 4 is 3.
+Case 14:
+Closest sum to 1 is 200001.
+Case 15:
+Closest sum to 111 is 11.
+Case 16:
+Closest sum to 42 is 45.
+Closest sum to 46 is 46.
+Closest sum to 49 is 50.
+Case 17:
+Closest sum to 42 is 45.
+Closest sum to 46 is 46.
+Closest sum to 47 is 46.
+Case 18:
+Closest sum to 1 is 15.
+Closest sum to 51 is 51.
+Closest sum to 30 is 29.
+Case 19:
+Closest sum to 1 is 3.
+Closest sum to 2 is 3.
+Closest sum to 3 is 3.
+Case 20:
+Closest sum to 4 is 4.
+Closest sum to 5 is 5.
+Closest sum to 6 is 5.
