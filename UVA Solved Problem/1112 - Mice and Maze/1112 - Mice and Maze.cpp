@@ -36,7 +36,7 @@ using namespace std;
 #define REP(i,n) for(int i=0;i<n; i++)
 #define FOR(i,k,n) for(int i=k;i<=n; i++)
 #define fr(i,k,n) for(int i=k;i<n; i++)
-#define MAX 1000001
+#define MAX 105
 #define inf 2000000000
 #define MOD 100000000
 
@@ -45,50 +45,67 @@ template<class T>T gcd(T a,T b){ return b==0 ? a : gcd(b,a%b); }
 template<class T>T lcm(T a,T b){ return (a/gcd(a,b))*b; }
 template<class T>bool isPrime(T n){ for(T i=2; i*i<=n; i++){ if(n%i==0) return false; } return true; }
 
-vector<int>prime;
-int res[MAX];
+struct edge
+{
+    int v,w;
+    edge(int v,int w){ this->v=v; this->w=w; }
+};
 
-void sieve(){
-    int bol[1011]={0};
-    for(int i = 3; i*i <= 1011; i+=2 )
-        if( bol[i] == 0)
-            for(int j = i*i; j <= 1011; j += 2*i )
-                bol[j] = 1;
+struct node
+{
+    int u,w;
+    node(int u,int w){ this->u=u; this->w=w; }
+    bool operator<( const node& temp ) const { return w>temp.w; }
+};
 
-    prime.pb(2);
-    for(int i = 3; i <= 1011; i+=2 )
-        if( bol[i] == 0)
-            prime.pb(i);
-}
+vector<edge>g[MAX];
+int d[MAX];
 
-int primeFactorize(int n ){
-    int co=0;
-    for(int i = 0; (prime[i]*prime[i]) <=n; i++ ){
-        if( n % prime[i] == 0 ){
-            while( n % prime[i] == 0 ){
-                n /= prime[i];
-                co++;
+int Dijkstra(int n,int src,int des){
+    FOR(i,1,n) d[i]=inf;
+    priority_queue<node>q;
+    q.push( node(src,0) );
+    d[src]=0;
+    while(!q.empty()){
+        int u=q.top().u;
+        q.pop();
+        REP(i,g[u].size()){
+            int v=g[u][i].v;
+            int w=g[u][i].w;
+            if( d[v]>d[u]+w ){
+                d[v] = d[u]+w;
+                q.push( node(v,d[v]) );
             }
         }
     }
-    if(n > 1) ++co;
-    return co;
+    return d[des];
 }
 
-void pregen(){
-    res[0]=0;
-    for(int i=1; i<MAX; i++)
-        res[i] = res[i-1]+primeFactorize(i);
-}
-
-int main(){
+int main()
+{
     filein;
-    fileout;
-    sieve();
-    pregen();
-    int n;
-    while( sc(n) != EOF ){
-        printf("%d == %3d\n",n,res[n]);
+   // fileout;
+
+    int t;
+    sc(t);
+    while(t--){
+        int n,ex,time,m;
+        scanf("%d %d %d",&n,&ex,&time);
+        sc(m);
+        while(m--){
+            int u,v,w;
+            scanf("%d %d %d",&u,&v,&w);
+            g[u].pb( edge(v,w) );
+        }
+        int mice=0;
+        FOR(i,1,n){
+            int r = Dijkstra(n,i,ex);
+            if(r<=time) ++mice;
+        }
+        printf("%d\n",mice);
+        if(t) puts("");
+        FOR(i,1,n) g[i].clear();
     }
     return 0;
 }
+

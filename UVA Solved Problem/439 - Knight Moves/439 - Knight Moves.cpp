@@ -19,7 +19,7 @@
 
 using namespace std;
 
-#define eps 0.0000000001
+#define EPS 0.0000000001
 #define pr pair<int,int>
 #define mp make_pair
 #define ss second
@@ -36,8 +36,8 @@ using namespace std;
 #define REP(i,n) for(int i=0;i<n; i++)
 #define FOR(i,k,n) for(int i=k;i<=n; i++)
 #define fr(i,k,n) for(int i=k;i<n; i++)
-#define MAX 1000001
-#define inf 2000000000
+#define MAX 10
+#define inf 2000000
 #define MOD 100000000
 
 template<class T>T sq(T a){ return (a*a); }
@@ -45,50 +45,47 @@ template<class T>T gcd(T a,T b){ return b==0 ? a : gcd(b,a%b); }
 template<class T>T lcm(T a,T b){ return (a/gcd(a,b))*b; }
 template<class T>bool isPrime(T n){ for(T i=2; i*i<=n; i++){ if(n%i==0) return false; } return true; }
 
-vector<int>prime;
-int res[MAX];
+int m[MAX][MAX];
+int x[] = {2,2,-2,-2,1,-1,1,-1};
+int y[] = {1,-1,1,-1,2,2,-2,-2};
 
-void sieve(){
-    int bol[1011]={0};
-    for(int i = 3; i*i <= 1011; i+=2 )
-        if( bol[i] == 0)
-            for(int j = i*i; j <= 1011; j += 2*i )
-                bol[j] = 1;
-
-    prime.pb(2);
-    for(int i = 3; i <= 1011; i+=2 )
-        if( bol[i] == 0)
-            prime.pb(i);
+bool valid_move(int r,int c){
+    return ( (r>0&&r<=8) && (c>0&&c<=8) );
 }
 
-int primeFactorize(int n ){
-    int co=0;
-    for(int i = 0; (prime[i]*prime[i]) <=n; i++ ){
-        if( n % prime[i] == 0 ){
-            while( n % prime[i] == 0 ){
-                n /= prime[i];
-                co++;
+void init(){
+    FOR(i,1,8)
+        FOR(j,1,8)
+            m[i][j]=inf;
+}
+
+int bfs(int sr,int sc,int r2,int c2){
+    init();
+    queue<pr>q;
+    q.push( mp(sr,sc) );
+    m[sr][sc]=0;
+    while(!q.empty()){
+        pr p = q.front(); q.pop();
+        REP(i,8){
+            int r=p.fi+x[i];
+            int c=p.ss+y[i];
+            if( valid_move(r,c) && m[p.fi][p.ss]+1<m[r][c] ){
+                m[r][c] = m[p.fi][p.ss]+1;
+                q.push( mp(r,c) );
             }
         }
     }
-    if(n > 1) ++co;
-    return co;
+    return m[r2][c2];
 }
 
-void pregen(){
-    res[0]=0;
-    for(int i=1; i<MAX; i++)
-        res[i] = res[i-1]+primeFactorize(i);
-}
+int main()
+{
+    //filein;
 
-int main(){
-    filein;
-    fileout;
-    sieve();
-    pregen();
-    int n;
-    while( sc(n) != EOF ){
-        printf("%d == %3d\n",n,res[n]);
+    char R[4],C[4];
+    while( scanf("%s %s",R,C) == 2 ){
+        printf("To get from %s to %s takes %d knight moves.\n",R,C,bfs(R[1]-'0',R[0]-'a'+1,C[1]-'0',C[0]-'a'+1));
     }
     return 0;
 }
+
