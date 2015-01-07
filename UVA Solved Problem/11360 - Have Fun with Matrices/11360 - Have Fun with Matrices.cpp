@@ -45,7 +45,7 @@ using namespace std;
 
 #define EPS 1e-9
 #define pi acos(-1.0)
-#define MAX 100005
+#define MAX 15
 #define oo 2000000000.0
 #define MOD 1000000007
 
@@ -61,67 +61,80 @@ template<class T>T lcm(T a,T b){ return (a/gcd(a,b))*b; }
 template<class T>T Pow(T n,T p) { T res=n; for(T i=1;i<p; i++){ res *= n; } return res; }
 template<class T>bool isPrime(T n){ for(T i=2; i*i<=n; i++){ if(n%i==0) return false; } return true; }
 
-map<char,char>m;
-map<string,int>freq;
+char ch,com[15];
+int m[MAX][MAX];
 
-void MAP(){
-    m['A']=m['B']=m['C']='2';
-    m['D']=m['E']=m['F']='3';
-    m['G']=m['H']=m['I']='4';
-    m['J']=m['K']=m['L']='5';
-    m['M']=m['N']=m['O']='6';
-    m['P']=m['R']=m['S']='7';
-    m['T']=m['U']=m['V']='8';
-    m['W']=m['X']=m['Y']='9';
+void interchange_row(int n,int r,int c){
+    FOR(i,1,n)
+        swap(m[r][i],m[c][i]);
 }
 
-string DEC(string s){
-    string x="";
-    for(int i=0,k=0;s[i]!='\0';i++){
-        if( isdigit(s[i]) ) x+=s[i],k++;
-        else if( isupper(s[i]) ) x+=m[s[i]],k++;
-        if(k==3) x+='-',k=4;
-    }
-    return x;
+void interchange_col(int n,int r,int c){
+    FOR(i,1,n)
+        swap(m[i][r],m[i][c]);
 }
 
-bool com(string a,string b){
-    return a.compare(b) < 0;
+void increase(int n){
+    FOR(i,1,n)
+        FOR(j,1,n)
+            m[i][j]=(m[i][j]==9) ? 0 : m[i][j]+1;
+}
+
+void decrease(int n){
+    FOR(i,1,n)
+        FOR(j,1,n)
+            m[i][j] = (m[i][j]==0) ? 9 : m[i][j]-1;
+}
+
+void transpose(int n){
+    FOR(i,1,n)
+        FOR(j,i+1,n)
+            swap(m[i][j],m[j][i]);
 }
 
 int main(){
 
-    filein;
+    //filein;
+    //fileout;
 
-    MAP();
-    int t,T=0;
+    int t,T=0,n,M,x,y;
     scanf("%d",&t);
     while(t--){
-        int n;
         scanf("%d",&n);
-        set<string>numbers;
-        set<string>::iterator it;
-        REP(i,n){
-            string num;
-            cin>>num;
-            num=DEC(num);
-            freq[num]++;
-            numbers.insert(num);
+        FOR(i,1,n){
+            FOR(j,1,n){
+                cin >> ch;
+                m[i][j]=ch-'0';
+            }
         }
-        vector<string>ans;
-        for(it=numbers.begin(); it!=numbers.end(); it++){
-            string num=*it;
-            if(freq[num]>1) ans.pb(num);
+        scanf("%d",&M);
+        while(M--){
+            scanf("%s",&com);
+            if(com[0]=='r'){
+                scanf("%d %d",&x,&y);
+                interchange_row(n,x,y);
+            }
+            else if(com[0]=='c'){
+                scanf("%d %d",&x,&y);
+                interchange_col(n,x,y);
+            }
+            else if(com[0]=='i'){
+                increase(n);
+            }
+            else if(com[0]=='d'){
+                decrease(n);
+            }
+            else if(com[0]=='t'){
+                transpose(n);
+            }
         }
-        sort( all(ans) , com );
-        if(T) nl;
-        if(ans.sz==0)
-            puts("No duplicates.");
-        else
-            REP(i,ans.sz)
-                printf("%s %d\n",ans[i].c_str(),freq[ans[i]]);
-        T=1;
-        freq.cl;
+        printf("Case #%d\n",++T);
+        FOR(i,1,n){
+            FOR(j,1,n)
+                printf("%d",m[i][j]);
+            nl;
+        }
+        nl;
     }
     return 0;
 }

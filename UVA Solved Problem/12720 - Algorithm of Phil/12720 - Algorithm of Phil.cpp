@@ -21,7 +21,7 @@
 using namespace std;
 
 #define filein freopen("in.txt","r",stdin)
-#define fileout freopen("out.txt","w",stdout)
+#define fileout freopen("my.txt","w",stdout)
 
 #define cs(x) printf("Case %d: ",x)
 #define csn(x) printf("Case %d:\n",x)
@@ -46,7 +46,7 @@ using namespace std;
 #define EPS 1e-9
 #define pi acos(-1.0)
 #define MAX 100005
-#define oo 2000000000.0
+#define inf 2000000000.0
 #define MOD 1000000007
 
 typedef long long i64;
@@ -61,67 +61,65 @@ template<class T>T lcm(T a,T b){ return (a/gcd(a,b))*b; }
 template<class T>T Pow(T n,T p) { T res=n; for(T i=1;i<p; i++){ res *= n; } return res; }
 template<class T>bool isPrime(T n){ for(T i=2; i*i<=n; i++){ if(n%i==0) return false; } return true; }
 
-map<char,char>m;
-map<string,int>freq;
+char a[MAX];
+int s[MAX];
 
-void MAP(){
-    m['A']=m['B']=m['C']='2';
-    m['D']=m['E']=m['F']='3';
-    m['G']=m['H']=m['I']='4';
-    m['J']=m['K']=m['L']='5';
-    m['M']=m['N']=m['O']='6';
-    m['P']=m['R']=m['S']='7';
-    m['T']=m['U']=m['V']='8';
-    m['W']=m['X']=m['Y']='9';
-}
-
-string DEC(string s){
-    string x="";
-    for(int i=0,k=0;s[i]!='\0';i++){
-        if( isdigit(s[i]) ) x+=s[i],k++;
-        else if( isupper(s[i]) ) x+=m[s[i]],k++;
-        if(k==3) x+='-',k=4;
+i64 toDecimal(int ln){
+    i64 p=1,dc=0;
+    for(int i=ln-1;i>=0;i--){
+        dc = (dc%MOD + (p*s[i])%MOD)%MOD;
+        p = (p%MOD * 2%MOD)%MOD;
     }
-    return x;
+    return dc;
 }
 
-bool com(string a,string b){
-    return a.compare(b) < 0;
-}
+int main()
+{
+    //filein;
 
-int main(){
-
-    filein;
-
-    MAP();
     int t,T=0;
-    scanf("%d",&t);
-    while(t--){
-        int n;
-        scanf("%d",&n);
-        set<string>numbers;
-        set<string>::iterator it;
-        REP(i,n){
-            string num;
-            cin>>num;
-            num=DEC(num);
-            freq[num]++;
-            numbers.insert(num);
+    sc(t);
+    while( t-- ){
+        scanf("%s",a);
+        int ln=strlen(a);
+        int leftBit,rightBit;
+
+        if( (ln&1) ){
+            leftBit = ln>>1;
+            rightBit=leftBit+1;
         }
-        vector<string>ans;
-        for(it=numbers.begin(); it!=numbers.end(); it++){
-            string num=*it;
-            if(freq[num]>1) ans.pb(num);
+        else{
+            rightBit = ln>>1;
+            leftBit=rightBit-1;
         }
-        sort( all(ans) , com );
-        if(T) nl;
-        if(ans.sz==0)
-            puts("No duplicates.");
-        else
-            REP(i,ans.sz)
-                printf("%s %d\n",ans[i].c_str(),freq[ans[i]]);
-        T=1;
-        freq.cl;
+
+        int k=0,pre=leftBit;
+        while(ln){
+            if(ln==1){
+                s[k]=(a[leftBit]-'0');
+            }
+            else if( (ln&1) ){
+                s[k]=(a[leftBit]-'0');
+                int tmp=leftBit;
+                leftBit=pre-1;
+                pre=leftBit;
+            }
+            else{
+                if( a[leftBit]<=a[rightBit] ){
+                    s[k]=(a[rightBit]-'0');
+                    ++rightBit;
+                }
+                else{
+                    s[k]=(a[leftBit]-'0');
+                    leftBit=rightBit;
+                    ++rightBit;
+                }
+            }
+            --ln;
+            ++k;
+        }
+        printf("Case #%d: %lld\n",++T,toDecimal(k));
     }
     return 0;
 }
+

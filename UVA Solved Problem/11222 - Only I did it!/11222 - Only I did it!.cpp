@@ -45,7 +45,7 @@ using namespace std;
 
 #define EPS 1e-9
 #define pi acos(-1.0)
-#define MAX 100005
+#define MAX 1005
 #define oo 2000000000.0
 #define MOD 1000000007
 
@@ -61,67 +61,55 @@ template<class T>T lcm(T a,T b){ return (a/gcd(a,b))*b; }
 template<class T>T Pow(T n,T p) { T res=n; for(T i=1;i<p; i++){ res *= n; } return res; }
 template<class T>bool isPrime(T n){ for(T i=2; i*i<=n; i++){ if(n%i==0) return false; } return true; }
 
-map<char,char>m;
-map<string,int>freq;
-
-void MAP(){
-    m['A']=m['B']=m['C']='2';
-    m['D']=m['E']=m['F']='3';
-    m['G']=m['H']=m['I']='4';
-    m['J']=m['K']=m['L']='5';
-    m['M']=m['N']=m['O']='6';
-    m['P']=m['R']=m['S']='7';
-    m['T']=m['U']=m['V']='8';
-    m['W']=m['X']=m['Y']='9';
-}
-
-string DEC(string s){
-    string x="";
-    for(int i=0,k=0;s[i]!='\0';i++){
-        if( isdigit(s[i]) ) x+=s[i],k++;
-        else if( isupper(s[i]) ) x+=m[s[i]],k++;
-        if(k==3) x+='-',k=4;
-    }
-    return x;
-}
-
-bool com(string a,string b){
-    return a.compare(b) < 0;
-}
+int f[3][MAX];
+int p[3][10005];
 
 int main(){
 
-    filein;
+    //filein;
 
-    MAP();
     int t,T=0;
     scanf("%d",&t);
     while(t--){
-        int n;
-        scanf("%d",&n);
-        set<string>numbers;
-        set<string>::iterator it;
-        REP(i,n){
-            string num;
-            cin>>num;
-            num=DEC(num);
-            freq[num]++;
-            numbers.insert(num);
+        REP(i,10002) p[0][i]=0,p[1][i]=0,p[2][i]=0;
+
+        int n[3];
+        REP(j,3){
+            scanf("%d",&n[j]);
+            REP(i,n[j]){
+                scanf("%d",&f[j][i]);
+                p[j][f[j][i]]=1;
+            }
         }
-        vector<string>ans;
-        for(it=numbers.begin(); it!=numbers.end(); it++){
-            string num=*it;
-            if(freq[num]>1) ans.pb(num);
+        vci ans[3];
+        REP(pp,3){
+            int w,e;
+            if(pp==0)
+                w=1,e=2;
+            else if(pp==1)
+                w=0,e=2;
+            else
+                w=0,e=1;
+            REP(i,n[pp]){
+                if( p[w][f[pp][i]] == 0 && p[e][f[pp][i]] == 0 )
+                    ans[pp].pb( f[pp][i] );
+            }
         }
-        sort( all(ans) , com );
-        if(T) nl;
-        if(ans.sz==0)
-            puts("No duplicates.");
-        else
-            REP(i,ans.sz)
-                printf("%s %d\n",ans[i].c_str(),freq[ans[i]]);
-        T=1;
-        freq.cl;
+        int szz[3];
+        szz[0]=ans[0].sz;
+        szz[1]=ans[1].sz;
+        szz[2]=ans[2].sz;
+        int mx=max( szz[0],max(szz[1],szz[2]) );
+        printf("Case #%d:\n",++T);
+        REP(i,3){
+            if( mx==szz[i] ){
+                printf("%d %d",i+1,mx);
+                sort(all(ans[i]));
+                REP(k,mx)
+                    printf(" %d",ans[i][k]);
+                nl;
+            }
+        }
     }
     return 0;
 }
